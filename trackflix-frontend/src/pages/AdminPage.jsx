@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { toast } from "react-toastify";
+import { Activity, Database, Film, Users } from "lucide-react";
 
 import { auth } from "../firebase/firebase-config";
 import TabsNav from "../components/AdminTabs/TabsNav";
@@ -53,8 +54,36 @@ const AdminPage = () => {
     loadTopTenMovies,
     loadMoreCelebrities,
     loadInterests,
-    loadUsers,
   } = useAdminData();
+
+  const collectionCount = [
+    celebrities,
+    fanFavourites,
+    fullMovieDetails,
+    fullMovies,
+    liveTVShows,
+    liveTVDetails,
+    featuredItems,
+    ftRecommendations,
+    topTenMovies,
+    moreCelebrities,
+    interests,
+  ].reduce((total, collection) => total + (Array.isArray(collection) ? collection.length : 0), 0);
+  const sectionNames = {
+    celebrities: "Celebrities",
+    fanfavourites: "Fan favourites",
+    fullmoviedetails: "Movie details",
+    fullmovies: "Full movies",
+    livetvdetails: "TV show details",
+    livetvshows: "TV shows",
+    featureditems: "Featured items",
+    ftrecommendations: "Featured today",
+    interests: "Interests",
+    toptenmovies: "Top ten movies",
+    morecelebrity: "Recommended talent",
+    users: "Users",
+    loginstats: "Login stats",
+  };
 
   const handleLogout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to logout?");
@@ -72,8 +101,42 @@ const AdminPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <TabsNav activeTab={activeTab} setActiveTab={setActiveTab} className="mt-6" />
+    <main className="admin-dashboard">
+      <TabsNav activeTab={activeTab} setActiveTab={setActiveTab} onLogout={handleLogout} />
+
+      <div className="admin-main">
+        <header className="admin-page-heading">
+          <div>
+            <div className="admin-eyebrow"><span /> CONTENT MANAGEMENT</div>
+            <h1>{sectionNames[activeTab] || "Admin overview"}</h1>
+            <p>Manage your streaming catalogue and audience from one place.</p>
+          </div>
+          <div className="admin-live-chip"><Activity size={15} /> Live workspace</div>
+        </header>
+
+        <section className="admin-metrics" aria-label="Dashboard overview">
+          <article className="admin-metric-card">
+            <span className="admin-metric-icon violet"><Database size={18} /></span>
+            <div><span className="admin-metric-label">Catalogue entries</span><strong>{collectionCount.toLocaleString()}</strong></div>
+            <span className="admin-metric-note">Across all sections</span>
+          </article>
+          <article className="admin-metric-card">
+            <span className="admin-metric-icon blue"><Film size={18} /></span>
+            <div><span className="admin-metric-label">Content sections</span><strong>11</strong></div>
+            <span className="admin-metric-note">Ready to manage</span>
+          </article>
+          <article className="admin-metric-card">
+            <span className="admin-metric-icon mint"><Users size={18} /></span>
+            <div><span className="admin-metric-label">Registered users</span><strong>{users.length.toLocaleString()}</strong></div>
+            <span className="admin-metric-note">Audience accounts</span>
+          </article>
+        </section>
+
+        <section className="admin-content-panel" aria-label={`${sectionNames[activeTab] || "Admin"} management`}>
+          <div className="admin-panel-heading">
+            <div><span className="admin-panel-kicker">WORKSPACE / CATALOGUE</span><h2>{sectionNames[activeTab] || "Management"}</h2></div>
+            <span className="admin-panel-live"><span /> Synced data</span>
+          </div>
 
       {activeTab === "celebrities" && (
         <CelebritiesTab
@@ -219,7 +282,9 @@ const AdminPage = () => {
       )}
 
       {activeTab === "users" && <UsersTab users={users} />}
-    </div>
+        </section>
+      </div>
+    </main>
   );
 };
 

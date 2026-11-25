@@ -69,6 +69,8 @@ const TabsNav = ({ activeTab, setActiveTab, onLogout }) => {
                 setIsMenuOpen(false);
               }}
               className={`admin-nav-item${isActive ? " is-active" : ""}`}
+              aria-label={tab.label}
+              title={tab.label}
               aria-current={isActive ? "page" : undefined}
             >
               <IconComponent size={17} strokeWidth={1.8} aria-hidden="true" />
@@ -81,7 +83,7 @@ const TabsNav = ({ activeTab, setActiveTab, onLogout }) => {
 
       <div className="admin-sidebar-bottom">
         <div className="admin-status"><span /> All systems operational</div>
-        <button type="button" onClick={onLogout} className="admin-logout">
+        <button type="button" onClick={onLogout} className="admin-logout" aria-label="Sign out" title="Sign out">
           <LogOut size={17} aria-hidden="true" />
           <span>Sign out</span>
         </button>

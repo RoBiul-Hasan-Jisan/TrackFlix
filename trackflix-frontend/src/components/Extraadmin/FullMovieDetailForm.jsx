@@ -12,6 +12,7 @@ const FullMovieDetailForm = ({
   const [success, setSuccess] = useState(false);
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [imageValid, setImageValid] = useState(false);
+  const [shouldFocusError, setShouldFocusError] = useState(false);
   const firstErrorRef = useRef(null);
 
   const validate = (values) => {
@@ -76,23 +77,27 @@ const FullMovieDetailForm = ({
   }, [form]);
 
   useEffect(() => {
-    if (Object.keys(errors).length > 0 && firstErrorRef.current) {
-      firstErrorRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-      firstErrorRef.current.focus();
-    }
-  }, [errors]);
+    if (!shouldFocusError) return;
+    firstErrorRef.current?.focus();
+    setShouldFocusError(false);
+  }, [shouldFocusError, errors]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validate(form);
     setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
+    if (Object.keys(validationErrors).length > 0) {
+      setShouldFocusError(true);
+      return;
+    }
+    setShouldFocusError(false);
 
     onSubmit(e);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 4000);
   };
 
+  const firstErrorName = fields.find(({ name }) => errors[name])?.name;
   const isSubmitDisabled = isSubmitting || Object.keys(errors).length > 0;
 
   const handleCommaSeparatedChange = (e, fieldName) => {
@@ -168,38 +173,13 @@ const FullMovieDetailForm = ({
   ];
 
   return (
-    <div
-      style={{
-        maxWidth: "800px",
-        margin: "2rem auto",
-        padding: "1rem",
-        borderRadius: "12px",
-        backgroundColor: "#f9fafb",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      }}
-    >
-      <h2
-        style={{
-          textAlign: "center",
-          marginBottom: "2rem",
-          color: "#15803d",
-          fontSize: "2rem",
-          fontWeight: "900",
-          letterSpacing: "1.5px",
-        }}
-      >
+    <div className="admin-form-shell admin-form-shell--movie">
+      <h2 className="admin-form-title">
         {isEditing ? "Edit" : "Add"} Full Movie Detail
       </h2>
 
       <form onSubmit={handleSubmit} noValidate>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: window.innerWidth < 640 ? "1fr" : "1fr 1fr",
-            gap: "1rem 1rem",
-          }}
-        >
+        <div className="admin-movie-detail-grid">
           {fields.map(({ name, type, label, disabled, required, isCommaSeparated, step }) => {
             const fieldValue = form[name];
             const displayValue = isCommaSeparated
@@ -209,15 +189,8 @@ const FullMovieDetailForm = ({
               : fieldValue || "";
 
             return (
-              <div key={name} style={{ display: "flex", flexDirection: "column" }}>
-                <label
-                  htmlFor={name}
-                  style={{
-                    fontWeight: "600",
-                    marginBottom: "0.3rem",
-                    color: errors[name] ? "#dc2626" : "#065f46",
-                  }}
-                >
+              <div key={name} className="admin-movie-field">
+                <label htmlFor={name}>
                   {label}
                   {required && <span style={{ color: "#dc2626" }}> *</span>}
                 </label>
@@ -234,27 +207,16 @@ const FullMovieDetailForm = ({
                   }
                   min={type === "number" ? 0 : undefined}
                   step={step}
-                  style={{
-                    padding: "0.5rem 0.75rem",
-                    borderRadius: "6px",
-                    border: errors[name]
-                      ? "2px solid #dc2626"
-                      : "1.5px solid #d1d5db",
-                    outline: "none",
-                    fontSize: "1rem",
-                    color: "#111827",
-                    width: "100%",
-                    boxSizing: "border-box",
-                  }}
-                  aria-invalid={errors[name] ? "true" : "false"}
-                  aria-describedby={`${name}-error`}
-                  ref={errors[name] && !firstErrorRef.current ? firstErrorRef : null}
+                  className="admin-field-control"
+                  aria-invalid={Boolean(errors[name])}
+                  aria-describedby={errors[name] ? `${name}-error` : undefined}
+                  ref={name === firstErrorName ? firstErrorRef : null}
                 />
                 {errors[name] && (
                   <span
                     id={`${name}-error`}
                     role="alert"
-                    style={{ color: "#dc2626", marginTop: "0.25rem", fontWeight: "600" }}
+                    className="admin-field-error"
                   >
                     {errors[name]}
                   </span>
@@ -265,22 +227,11 @@ const FullMovieDetailForm = ({
         </div>
 
         {showImagePreview && imageValid && (
-          <div
-            style={{
-              marginTop: "2rem",
-              textAlign: "center",
-            }}
-          >
+          <div className="admin-image-preview">
             <img
               src={form.image}
-              alt="Movie Preview"
-              style={{
-                width: "100%",
-                maxHeight: "320px",
-                borderRadius: "12px",
-                border: "2px solid #22c55e",
-                objectFit: "contain",
-              }}
+              alt="Movie preview"
+              className="admin-image-preview-image"
               onError={() => setImageValid(false)}
               onLoad={() => setImageValid(true)}
               draggable={false}
@@ -288,29 +239,13 @@ const FullMovieDetailForm = ({
           </div>
         )}
 
-        <div
-          style={{
-            marginTop: "2rem",
-            display: "flex",
-            flexDirection: window.innerWidth < 640 ? "column" : "row",
-            justifyContent: isEditing ? "space-between" : "flex-end",
-            gap: "1rem",
-          }}
-        >
+        <div className={`admin-form-actions${isEditing ? " is-editing" : ""}`}>
           {isEditing && (
             <button
               type="button"
               onClick={onCancel}
               disabled={isSubmitting}
-              style={{
-                padding: "0.6rem 1.25rem",
-                backgroundColor: "#6b7280",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                cursor: isSubmitting ? "not-allowed" : "pointer",
-                fontWeight: "600",
-              }}
+              className="admin-form-cancel"
             >
               Cancel
             </button>
@@ -319,16 +254,7 @@ const FullMovieDetailForm = ({
           <button
             type="submit"
             disabled={isSubmitDisabled}
-            style={{
-              padding: "0.75rem 2rem",
-              backgroundColor: isSubmitDisabled ? "#a7f3d0" : "#22c55e",
-              color: isSubmitDisabled ? "#166534" : "white",
-              border: "none",
-              borderRadius: "6px",
-              cursor: isSubmitDisabled ? "not-allowed" : "pointer",
-              fontWeight: "700",
-              fontSize: "1.1rem",
-            }}
+            className="admin-form-submit"
           >
             {isSubmitting
               ? isEditing
@@ -341,14 +267,7 @@ const FullMovieDetailForm = ({
         </div>
 
         {success && (
-          <p
-            style={{
-              marginTop: "1rem",
-              color: "#15803d",
-              fontWeight: "700",
-              textAlign: "center",
-            }}
-          >
+          <p className="admin-form-success">
             Successfully {isEditing ? "updated" : "added"} movie detail!
           </p>
         )}

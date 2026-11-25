@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 const LiveTVShowForm = ({ form, onChange, onSubmit, onCancel, isEditing, isSubmitting }) => {
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
+  const [shouldFocusError, setShouldFocusError] = useState(false);
   const firstErrorRef = useRef(null);
 
   const validate = (values) => {
@@ -25,17 +26,20 @@ const LiveTVShowForm = ({ form, onChange, onSubmit, onCancel, isEditing, isSubmi
   }, [form]);
 
   useEffect(() => {
-    if (Object.keys(errors).length > 0 && firstErrorRef.current) {
-      firstErrorRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-      firstErrorRef.current.focus();
-    }
-  }, [errors]);
+    if (!shouldFocusError) return;
+    firstErrorRef.current?.focus();
+    setShouldFocusError(false);
+  }, [shouldFocusError, errors]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validate(form);
     setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
+    if (Object.keys(validationErrors).length > 0) {
+      setShouldFocusError(true);
+      return;
+    }
+    setShouldFocusError(false);
     onSubmit(e);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 4000);
@@ -50,9 +54,10 @@ const LiveTVShowForm = ({ form, onChange, onSubmit, onCancel, isEditing, isSubmi
     { name: "trailer", type: "text" },
     { name: "image", type: "text" },
   ];
+  const firstErrorName = fields.find(({ name }) => errors[name])?.name;
 
   return (
-    <div className="max-w-3xl mx-auto p-10 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 rounded-3xl shadow-2xl border border-purple-700 relative">
+    <div className="admin-form-shell">
       {success && (
         <p className="mb-6 text-green-400 font-bold text-center tracking-wide drop-shadow-md">
           ✔️ Success! The show was saved.
@@ -60,11 +65,11 @@ const LiveTVShowForm = ({ form, onChange, onSubmit, onCancel, isEditing, isSubmi
       )}
 
       <form onSubmit={handleSubmit} noValidate autoComplete="off" className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 col-span-full text-center mb-10 drop-shadow-lg">
+        <h2 className="col-span-full mb-3 text-center">
           {isEditing ? "Edit Live TV Show" : "Add Live TV Show"}
         </h2>
 
-        {fields.map((field, idx) => {
+        {fields.map((field) => {
           const label = field.name.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase());
           const error = errors[field.name];
 
@@ -83,38 +88,26 @@ const LiveTVShowForm = ({ form, onChange, onSubmit, onCancel, isEditing, isSubmi
           return (
             <div key={field.name} className="relative">
               <input
+                id={field.name}
                 type={field.type}
                 name={field.name}
                 value={value}
+                aria-invalid={Boolean(error)}
+                aria-describedby={error ? `${field.name}-error` : undefined}
                 onChange={handleChange}
                 placeholder=" "
                 disabled={field.name === "id" && isEditing}
-                ref={error && idx === 0 ? firstErrorRef : null}
-                className={`peer w-full rounded-xl border-2 px-5 pt-6 pb-3 bg-gradient-to-tr from-indigo-800 via-purple-800 to-pink-800 text-white
-                  placeholder-transparent
-                  focus:outline-none focus:ring-4 focus:ring-pink-400 focus:ring-opacity-70
-                  transition-all duration-300
-                  ${
-                    error
-                      ? "border-pink-500 focus:border-pink-600"
-                      : "border-transparent focus:border-transparent"
-                  }
-                `}
+                ref={field.name === firstErrorName ? firstErrorRef : null}
+                className="peer w-full rounded-xl border px-5 pt-6 pb-3 placeholder-transparent transition-all focus:outline-none"
               />
               <label
                 htmlFor={field.name}
-                className={`absolute left-6 top-3 text-sm font-semibold tracking-wide text-pink-300
-                  pointer-events-none
-                  peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-pink-400
-                  peer-focus:top-3 peer-focus:text-sm peer-focus:text-pink-200
-                  transition-all duration-300
-                  ${error ? "text-pink-400 peer-focus:text-pink-300" : ""}
-                `}
+                className="absolute left-5 top-3 text-sm font-semibold tracking-wide pointer-events-none transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-focus:top-3 peer-focus:text-sm"
               >
                 {label}
               </label>
               {error && (
-                <p className="mt-1 text-pink-400 font-semibold drop-shadow-md">{error}</p>
+                <p id={`${field.name}-error`} className="mt-1 text-pink-400 font-semibold drop-shadow-md">{error}</p>
               )}
             </div>
           );
@@ -123,11 +116,7 @@ const LiveTVShowForm = ({ form, onChange, onSubmit, onCancel, isEditing, isSubmi
         <button
           type="submit"
           disabled={isSubmitting || Object.keys(errors).length > 0}
-          className="col-span-full w-full mt-8 rounded-full bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-700
-            hover:from-pink-600 hover:via-purple-700 hover:to-indigo-800
-            text-white font-extrabold text-2xl py-4 shadow-lg shadow-pink-700/50
-            transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed
-          "
+          className="col-span-full w-full mt-6 rounded-xl font-bold text-base py-4 transition-all duration-200 disabled:cursor-not-allowed"
         >
           {isSubmitting
             ? isEditing

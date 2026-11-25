@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   BadgeCheck,
@@ -6,10 +6,12 @@ import {
   Film,
   Heart,
   LogOut,
+  Menu,
   Radio,
   Sparkles,
   Star,
   Tv,
+  X,
   Users,
   WandSparkles,
 } from "lucide-react";
@@ -32,16 +34,29 @@ const tabs = [
 
 const TabsNav = ({ activeTab, setActiveTab, onLogout }) => {
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <aside className="admin-sidebar" aria-label="Admin dashboard sidebar">
-      <button className="admin-brand" onClick={() => navigate("/")} aria-label="TrackFlix home">
-        <span className="admin-brand-mark"><Clapperboard size={21} strokeWidth={2.3} /></span>
-        <span className="admin-brand-copy"><strong>TRACKFLIX</strong><small>STUDIO CONTROL</small></span>
-      </button>
+    <aside className={`admin-sidebar${isMenuOpen ? " is-menu-open" : ""}`} aria-label="Admin dashboard sidebar">
+      <div className="admin-sidebar-top">
+        <button className="admin-brand" onClick={() => navigate("/")} aria-label="TrackFlix home">
+          <span className="admin-brand-mark"><Clapperboard size={21} strokeWidth={2.3} /></span>
+          <span className="admin-brand-copy"><strong>TRACKFLIX</strong><small>STUDIO CONTROL</small></span>
+        </button>
+        <button
+          type="button"
+          className="admin-menu-toggle"
+          aria-label={isMenuOpen ? "Close dashboard menu" : "Open dashboard menu"}
+          aria-expanded={isMenuOpen}
+          aria-controls="admin-dashboard-navigation"
+          onClick={() => setIsMenuOpen((open) => !open)}
+        >
+          {isMenuOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
+        </button>
+      </div>
 
       <div className="admin-nav-heading">WORKSPACE</div>
-      <nav className="admin-nav-list" aria-label="Dashboard sections">
+      <nav id="admin-dashboard-navigation" className="admin-nav-list" aria-label="Dashboard sections">
         {tabs.map((tab) => {
           const IconComponent = tab.icon;
           const isActive = activeTab === tab.key;
@@ -49,7 +64,10 @@ const TabsNav = ({ activeTab, setActiveTab, onLogout }) => {
             <button
               type="button"
               key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => {
+                setActiveTab(tab.key);
+                setIsMenuOpen(false);
+              }}
               className={`admin-nav-item${isActive ? " is-active" : ""}`}
               aria-current={isActive ? "page" : undefined}
             >

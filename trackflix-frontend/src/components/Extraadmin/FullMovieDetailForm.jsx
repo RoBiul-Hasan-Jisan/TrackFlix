@@ -97,7 +97,6 @@ const FullMovieDetailForm = ({
     setTimeout(() => setSuccess(false), 4000);
   };
 
-  const firstErrorName = fields.find(({ name }) => errors[name])?.name;
   const isSubmitDisabled = isSubmitting || Object.keys(errors).length > 0;
 
   const handleCommaSeparatedChange = (e, fieldName) => {
@@ -171,6 +170,8 @@ const FullMovieDetailForm = ({
       isCommaSeparated: true,
     },
   ];
+
+  const firstErrorName = fields.find(({ name }) => errors[name])?.name;
 
   return (
     <div className="admin-form-shell admin-form-shell--movie">

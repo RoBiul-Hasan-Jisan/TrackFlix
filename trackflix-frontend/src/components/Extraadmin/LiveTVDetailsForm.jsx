@@ -70,7 +70,7 @@ const LiveTVDetailsForm = ({
   ];
 
   return (
-    <div className="max-w-4xl mx-auto p-8 bg-white rounded-3xl shadow-lg border border-yellow-300/40 relative">
+    <div className="admin-form-shell max-w-4xl mx-auto relative">
       {success && (
         <div className="mb-4 text-green-600 font-semibold text-center">
           Successfully saved!

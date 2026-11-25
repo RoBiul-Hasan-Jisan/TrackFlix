@@ -268,6 +268,10 @@
 .admin-content-panel li p:not(:first-child) { color: #9ba6bc !important; }
 .admin-content-panel li img { border-color: rgba(165, 180, 252, .18) !important; }
 .admin-content-panel > p { color: #9ba6bc !important; }
+.admin-content-panel [class~="bg-white"]:not(img) { border-color: rgba(165, 180, 252, .14) !important; background: linear-gradient(145deg, rgba(24, 30, 49, .94), rgba(15, 20, 34, .92)) !important; }
+.admin-content-panel [class~="bg-gray-50"], .admin-content-panel [class~="bg-indigo-50"], .admin-content-panel [class~="from-indigo-50"] { background: rgba(255, 255, 255, .045) !important; }
+.admin-content-panel [class~="text-gray-900"], .admin-content-panel [class~="text-gray-800"], .admin-content-panel [class~="text-indigo-900"], .admin-content-panel [class~="text-indigo-700"], .admin-content-panel [class~="text-black"] { color: #eef0fa !important; }
+.admin-content-panel [class~="text-gray-700"], .admin-content-panel [class~="text-gray-600"], .admin-content-panel [class~="text-gray-500"], .admin-content-panel [class~="text-gray-400"], .admin-content-panel [class~="text-indigo-600"] { color: #aab4c9 !important; }
 .admin-content-panel [role="dialog"] > div { border: 1px solid rgba(165, 180, 252, .18); background: #151a2a; color: #f3f4ff; }
 
 @media (max-width: 900px) {

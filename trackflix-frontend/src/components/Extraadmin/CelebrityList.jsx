@@ -46,7 +46,7 @@ const CelebrityList = ({
   return (
     <>
       <h3 className="text-2xl font-bold text-center mb-6 text-sky-600">
-        🎬 Full Movie List
+        All celebrities
       </h3>
 
       <ul className="space-y-4 px-4 sm:px-6 max-w-3xl mx-auto">

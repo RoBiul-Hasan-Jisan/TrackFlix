@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { useAuth } from "./context/AuthContext";
@@ -8,6 +8,9 @@ import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const { user, loading } = useAuth();
+  const { pathname } = useLocation();
+  // The admin dashboard has its own sidebar layout, so the public header/footer are hidden there.
+  const isAdminRoute = pathname.startsWith("/admin");
 
   if (loading) {
     return <div className="flex-grow flex items-center justify-center">Loading...</div>;
@@ -15,7 +18,7 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
-      <Header isLoggedIn={!!user} user={user} />
+      {!isAdminRoute && <Header isLoggedIn={!!user} user={user} />}
 
       <main className="flex-grow">
         <Suspense
@@ -27,7 +30,7 @@ function App() {
         </Suspense>
       </main>
 
-      <Footer />
+      {!isAdminRoute && <Footer />}
 
       
      

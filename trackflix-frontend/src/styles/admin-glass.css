@@ -1,0 +1,879 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap");
+
+/* ==========================================================================
+   Glass admin dashboard
+   Everything is scoped under .glass-admin so the public site is untouched.
+   ========================================================================== */
+
+.glass-admin {
+  --g-ink: #eef1ff;
+  --g-muted: rgba(226, 232, 255, 0.62);
+  --g-faint: rgba(226, 232, 255, 0.38);
+  --g-surface: rgba(255, 255, 255, 0.07);
+  --g-surface-strong: rgba(255, 255, 255, 0.12);
+  --g-edge: rgba(255, 255, 255, 0.14);
+  --g-edge-soft: rgba(255, 255, 255, 0.08);
+  --g-amber: #fbbf24;
+  --g-amber-soft: #fde68a;
+  --g-rose: #fb7185;
+  --g-cyan: #67e8f9;
+  --g-radius: 22px;
+  --g-blur: blur(22px) saturate(160%);
+
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 100vh;
+  color: var(--g-ink);
+  background: #000;
+  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  overflow-x: clip;
+}
+
+/* Colour field the glass sits on – glass needs something to blur */
+.glass-admin::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(620px 440px at 12% 6%, rgba(255, 255, 255, 0.10), transparent 62%),
+    radial-gradient(560px 440px at 90% 14%, rgba(255, 255, 255, 0.06), transparent 62%),
+    radial-gradient(700px 520px at 74% 96%, rgba(255, 255, 255, 0.07), transparent 62%),
+    #000;
+}
+
+.glass-admin *,
+.glass-admin *::before,
+.glass-admin *::after {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Shell
+   -------------------------------------------------------------------------- */
+
+.ga-side {
+  position: sticky;
+  top: 16px;
+  align-self: flex-start;
+  flex: 0 0 272px;
+  width: 272px;
+  height: calc(100vh - 32px);
+  margin: 16px;
+  padding: 22px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+  border-radius: 28px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--g-edge);
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: var(--g-blur);
+  backdrop-filter: var(--g-blur);
+  z-index: 40;
+}
+
+.ga-brand-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 6px 14px;
+  border-bottom: 1px solid var(--g-edge-soft);
+  margin-bottom: 4px;
+}
+.ga-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.ga-logo {
+  display: block;
+  width: 168px;
+  max-width: 100%;
+  height: auto;
+  user-select: none;
+  filter: drop-shadow(0 6px 18px rgba(251, 191, 36, 0.25));
+}
+.ga-brand-sub {
+  display: block;
+  padding-left: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--g-muted);
+}
+.ga-close {
+  display: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid var(--g-edge);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--g-ink);
+  cursor: pointer;
+}
+.ga-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ga-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 2px 0 8px;
+}
+
+.ga-group-title {
+  margin: 14px 12px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--g-faint);
+}
+
+.ga-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--g-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.ga-nav-item svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+.ga-nav-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ga-nav-item:hover {
+  color: var(--g-ink);
+  background: rgba(255, 255, 255, 0.07);
+}
+.ga-nav-item[aria-current="page"] {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--g-edge);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 10px 24px -14px rgba(0, 0, 0, 0.7);
+}
+.ga-nav-item[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 10px;
+  bottom: 10px;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(var(--g-amber), var(--g-rose));
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.8);
+}
+.ga-nav-item[aria-current="page"] svg {
+  color: var(--g-amber);
+}
+.ga-nav-count {
+  min-width: 26px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--g-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.ga-side-foot {
+  margin-top: auto;
+  padding-top: 14px;
+}
+.ga-side-foot .ga-nav-item {
+  color: #fecdd3;
+}
+.ga-side-foot .ga-nav-item:hover {
+  background: rgba(251, 113, 133, 0.16);
+  color: #fff;
+}
+
+.ga-main {
+  flex: 1;
+  min-width: 0;
+  padding: 16px 20px 56px 4px;
+}
+
+.ga-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border-radius: 24px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--g-edge);
+  box-shadow: 0 18px 44px -26px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: var(--g-blur);
+  backdrop-filter: var(--g-blur);
+}
+.ga-top-title {
+  margin: 0;
+  font-family: "Sora", "Manrope", sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+.ga-top-sub {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--g-muted);
+}
+.ga-top-text {
+  flex: 1;
+  min-width: 0;
+}
+.ga-top-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.ga-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--g-edge);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--g-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+}
+.ga-btn svg {
+  width: 17px;
+  height: 17px;
+}
+.ga-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.ga-btn-icon {
+  display: none;
+  padding: 10px;
+}
+
+.ga-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.ga-stat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: var(--g-radius);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--g-edge);
+  box-shadow: 0 18px 40px -26px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: var(--g-blur);
+  backdrop-filter: var(--g-blur);
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+}
+.ga-stat:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.ga-stat-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+  background: var(--chip, rgba(251, 191, 36, 0.18));
+  color: var(--chip-ink, var(--g-amber-soft));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+.ga-stat-icon svg {
+  width: 22px;
+  height: 22px;
+}
+.ga-stat-value {
+  display: block;
+  font-family: "Sora", "Manrope", sans-serif;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.ga-stat-label {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  color: var(--g-muted);
+}
+
+.ga-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+.ga-content > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  width: 100%;
+}
+
+.ga-empty {
+  padding: 56px 24px;
+  text-align: center;
+  border-radius: var(--g-radius);
+  background: var(--g-surface);
+  border: 1px dashed var(--g-edge);
+  color: var(--g-muted);
+}
+
+.ga-scrim {
+  display: none;
+}
+
+@media (max-width: 1180px) {
+  .ga-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .ga-side {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    height: 100dvh;
+    max-width: 88vw;
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+    margin: 0;
+    border-radius: 0 28px 28px 0;
+    transform: translateX(-105%);
+    transition: transform 0.28s ease;
+    background: linear-gradient(160deg, rgba(24, 24, 24, 0.96), rgba(6, 6, 6, 0.96));
+  }
+  .ga-side[data-open="true"] {
+    transform: none;
+  }
+  .ga-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 35;
+    background: rgba(0, 0, 0, 0.55);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    border: 0;
+  }
+  .ga-main {
+    padding: 12px 12px 48px;
+  }
+  .ga-btn-icon {
+    display: inline-flex;
+  }
+  .ga-close {
+    display: grid;
+  }
+  .ga-top {
+    padding: 12px;
+  }
+  .ga-top-title {
+    font-size: 18px;
+  }
+  .ga-top-sub {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ga-btn-label {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .ga-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .ga-stat {
+    padding: 12px;
+    gap: 10px;
+  }
+  .ga-stat-icon {
+    width: 38px;
+    height: 38px;
+  }
+  .ga-stat-value {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ga-side,
+  .ga-nav-item,
+  .ga-btn,
+  .ga-stat {
+    transition: none;
+  }
+}
+
+.glass-admin :is(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--g-amber);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Re-skin of the existing forms, lists, tables and modals.
+   Their markup and logic are unchanged; only the paint is overridden here.
+   ========================================================================== */
+
+/* ---- Surfaces: every white / grey / gradient card becomes glass ---- */
+.glass-admin
+  :is(div, section, form, li, article, aside):is(
+    .bg-white,
+    .bg-gray-50,
+    .bg-gray-100,
+    .bg-indigo-50,
+    .bg-yellow-50,
+    .bg-slate-700,
+    .bg-slate-800,
+    .bg-gray-700,
+    .bg-white\/60,
+    [class*="bg-gradient"],
+    [class*="from-white"],
+    [class*="from-slate"],
+    [class*="from-indigo"]
+  ):not(.ga-side):not(.ga-top):not(.ga-stat) {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.04)) !important;
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.04)) !important;
+  border: 1px solid var(--g-edge) !important;
+  border-radius: var(--g-radius) !important;
+  box-shadow: 0 22px 50px -28px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+  -webkit-backdrop-filter: var(--g-blur);
+  backdrop-filter: var(--g-blur);
+  color: var(--g-ink);
+}
+
+/* list rows (li / mobile cards) are a lighter layer than the panel behind them */
+.glass-admin li:is(.bg-white, .bg-gray-50, .bg-yellow-50, .bg-indigo-50),
+.glass-admin :is(div, article).rounded-lg:is(.bg-gray-50, .bg-white).border {
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.glass-admin li:is(.bg-white, .bg-gray-50):hover {
+  background: rgba(255, 255, 255, 0.11) !important;
+}
+
+/* ---- Text colours ---- */
+.glass-admin
+  :is(
+    .text-gray-900,
+    .text-gray-800,
+    .text-gray-700,
+    .text-slate-700,
+    .text-black,
+    .text-indigo-900,
+    .text-indigo-700,
+    .text-yellow-900,
+    .text-yellow-800,
+    .text-yellow-700,
+    .text-blue-700,
+    .text-emerald-800
+  ) {
+  color: var(--g-ink) !important;
+}
+.glass-admin :is(.text-gray-600, .text-gray-500, .text-gray-400, .text-slate-400, .text-slate-300, .text-slate-200) {
+  color: var(--g-muted) !important;
+}
+.glass-admin :is(.text-yellow-600, .text-yellow-500, .text-pink-400, .text-pink-300, .text-green-600, .text-green-400) {
+  color: var(--g-amber-soft) !important;
+}
+.glass-admin :is(a, button, span, p).text-sky-400,
+.glass-admin :is(a, span, p).text-sky-500,
+.glass-admin :is(a).text-indigo-600,
+.glass-admin :is(a).text-blue-600,
+.glass-admin a:is([class*="text-indigo"], [class*="text-blue"], [class*="text-sky"]) {
+  color: var(--g-cyan) !important;
+}
+.glass-admin :is(.text-red-600, .text-red-500) {
+  color: #fda4af !important;
+}
+
+/* headings share one voice */
+.glass-admin :is(h2, h3, h4)[class] {
+  color: var(--g-ink) !important;
+  font-family: "Sora", "Manrope", sans-serif;
+  font-weight: 600 !important;
+  letter-spacing: -0.015em;
+  text-shadow: none !important;
+  filter: none !important;
+}
+.glass-admin h2.bg-clip-text {
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+.glass-admin :is(h2, h3)[class].border-b {
+  border-color: var(--g-edge-soft) !important;
+}
+.glass-admin .uppercase {
+  text-transform: none !important;
+}
+
+/* ---- Form fields ---- */
+.glass-admin label {
+  color: var(--g-muted) !important;
+  font-weight: 600;
+}
+.glass-admin .peer:focus ~ label,
+.glass-admin .peer:not(:placeholder-shown):focus ~ label {
+  color: var(--g-amber-soft) !important;
+}
+
+.glass-admin :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]) {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  background-image: none !important;
+  color: var(--g-ink) !important;
+  border: 1px solid var(--g-edge) !important;
+  border-radius: 14px !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25) !important;
+  transition: border-color 0.18s, box-shadow 0.18s, background-color 0.18s;
+  caret-color: var(--g-amber);
+}
+.glass-admin :is(input, textarea, select):hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.09) !important;
+}
+.glass-admin :is(input, textarea, select):focus {
+  outline: none !important;
+  border-color: rgba(251, 191, 36, 0.8) !important;
+  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.18) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+.glass-admin :is(input, textarea, select):disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.glass-admin :is(input, textarea)::placeholder {
+  color: var(--g-faint) !important;
+}
+.glass-admin :is(input, textarea, select)[class*="border-red"] {
+  border-color: rgba(251, 113, 133, 0.9) !important;
+}
+.glass-admin :is(input, textarea, select)[class*="border-red"]:focus {
+  box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.2) !important;
+}
+.glass-admin select option {
+  background: #111;
+  color: var(--g-ink);
+}
+.glass-admin input[type="checkbox"],
+.glass-admin input[type="radio"] {
+  accent-color: var(--g-amber);
+}
+.glass-admin input[type="file"] {
+  color: var(--g-muted);
+}
+.glass-admin input:-webkit-autofill {
+  -webkit-text-fill-color: var(--g-ink);
+  -webkit-box-shadow: 0 0 0 1000px #161616 inset;
+}
+
+/* ---- Buttons ---- */
+.glass-admin button[class*="bg-"],
+.glass-admin a[class*="bg-"] {
+  border: 1px solid var(--g-edge);
+  background-image: none !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: var(--g-ink) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  font-weight: 600;
+  transition: background-color 0.18s, border-color 0.18s, transform 0.12s;
+}
+.glass-admin button[class*="bg-"]:hover:not(:disabled),
+.glass-admin a[class*="bg-"]:hover {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  transform: none !important;
+}
+.glass-admin button[class*="bg-"]:active:not(:disabled) {
+  transform: translateY(1px) !important;
+}
+.glass-admin button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* edit */
+.glass-admin :is(button, a):is(.bg-yellow-400, .bg-yellow-500, .bg-yellow-600) {
+  background-color: rgba(251, 191, 36, 0.2) !important;
+  border-color: rgba(251, 191, 36, 0.45) !important;
+  color: var(--g-amber-soft) !important;
+}
+.glass-admin :is(button, a):is(.bg-yellow-400, .bg-yellow-500, .bg-yellow-600):hover:not(:disabled) {
+  background-color: rgba(251, 191, 36, 0.32) !important;
+}
+/* delete */
+.glass-admin button:is(.bg-red-500, .bg-red-600, .bg-rose-600, .bg-pink-600) {
+  background-color: rgba(251, 113, 133, 0.2) !important;
+  border-color: rgba(251, 113, 133, 0.45) !important;
+  color: #fecdd3 !important;
+}
+.glass-admin button:is(.bg-red-500, .bg-red-600, .bg-rose-600, .bg-pink-600):hover:not(:disabled) {
+  background-color: rgba(251, 113, 133, 0.34) !important;
+}
+/* cancel */
+.glass-admin button:is(.bg-gray-300, .bg-gray-400, .bg-gray-500, .bg-slate-600, .bg-slate-700) {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: var(--g-muted) !important;
+}
+/* primary: submit buttons */
+.glass-admin button[type="submit"][class*="bg-"],
+.glass-admin button:is(.bg-indigo-600, .bg-indigo-500, .bg-indigo-300, .bg-blue-600, .bg-sky-600, .bg-purple-600) {
+  background-image: linear-gradient(135deg, #fde68a, #fbbf24 45%, #fb923c) !important;
+  background-color: transparent !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #1c1303 !important;
+  box-shadow: 0 12px 28px -12px rgba(251, 146, 60, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+.glass-admin button[type="submit"][class*="bg-"]:hover:not(:disabled),
+.glass-admin button:is(.bg-indigo-600, .bg-indigo-500, .bg-blue-600, .bg-sky-600, .bg-purple-600):hover:not(:disabled) {
+  filter: brightness(1.06);
+  background-color: transparent !important;
+}
+.glass-admin button[type="submit"][class*="bg-"] *,
+.glass-admin button[type="submit"][class*="bg-"] svg {
+  color: inherit !important;
+}
+.glass-admin button[type="submit"]:disabled {
+  filter: saturate(0.5);
+}
+
+/* ---- Badges / pills ---- */
+.glass-admin :is(span, div)[class*="rounded-full"][class*="bg-"]:not(.ga-nav-count) {
+  background-color: rgba(251, 191, 36, 0.18) !important;
+  color: var(--g-amber-soft) !important;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+/* ---- Tables ---- */
+.glass-admin table {
+  background: transparent !important;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.glass-admin thead,
+.glass-admin thead tr {
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+.glass-admin th {
+  color: var(--g-muted) !important;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0 !important;
+  border-bottom: 1px solid var(--g-edge) !important;
+}
+.glass-admin thead th:first-child {
+  border-top-left-radius: 12px;
+}
+.glass-admin thead th:last-child {
+  border-top-right-radius: 12px;
+}
+.glass-admin tbody,
+.glass-admin tbody tr,
+.glass-admin tbody td {
+  background: transparent !important;
+  color: var(--g-ink);
+}
+.glass-admin tbody tr[class*="bg-"] {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+.glass-admin tbody tr {
+  transition: background-color 0.15s;
+}
+.glass-admin tbody tr:hover,
+.glass-admin tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+.glass-admin tbody td {
+  border-bottom: 1px solid var(--g-edge-soft);
+}
+.glass-admin tbody tr:last-child td {
+  border-bottom: 0;
+}
+.glass-admin [class*="divide-"] > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--g-edge-soft) !important;
+}
+
+/* ---- Borders ---- */
+.glass-admin
+  :is(
+    .border,
+    .border-b,
+    .border-t,
+    .border-2,
+    [class*="border-gray"],
+    [class*="border-slate"],
+    [class*="border-indigo"],
+    [class*="border-yellow"],
+    [class*="border-blue"],
+    [class*="border-green"],
+    [class*="border-purple"],
+    [class*="border-pink"]
+  ):not([class*="border-red"]):not([class*="border-t-transparent"]):not(input):not(select):not(textarea):not(button) {
+  border-color: var(--g-edge) !important;
+}
+.glass-admin .overflow-x-auto.border {
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ---- Media ---- */
+.glass-admin img {
+  border-color: var(--g-edge) !important;
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.7);
+}
+
+/* ---- Spinner ---- */
+.glass-admin .animate-spin {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  border-top-color: var(--g-amber) !important;
+}
+
+/* ---- Error banner ---- */
+.glass-admin :is(p, div).bg-red-100 {
+  background: rgba(251, 113, 133, 0.14) !important;
+  border: 1px solid rgba(251, 113, 133, 0.4) !important;
+  color: #fecdd3 !important;
+  border-radius: 14px;
+}
+
+/* ---- Confirm-delete modal (fixed overlay inside the admin area) ---- */
+.glass-admin .fixed.inset-0 {
+  background: rgba(0, 0, 0, 0.6) !important;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.glass-admin .fixed.inset-0 > div {
+  background: linear-gradient(160deg, rgba(34, 34, 34, 0.9), rgba(8, 8, 8, 0.94)) !important;
+  background-image: linear-gradient(160deg, rgba(34, 34, 34, 0.9), rgba(8, 8, 8, 0.94)) !important;
+  border: 1px solid var(--g-edge) !important;
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ---- Icons that were coloured for a light theme ---- */
+.glass-admin svg:is(.text-blue-600, .text-blue-500, .text-indigo-600, .text-sky-500) {
+  color: var(--g-amber) !important;
+}
+
+/* validation messages stay rose, whatever colour the old markup used */
+.glass-admin p:is(.text-pink-400, .text-pink-300, .text-red-400, .text-red-500, .text-red-600) {
+  color: #fda4af !important;
+}
+
+/* ==========================================================================
+   Inline-styled markup (e.g. FullMovieDetailForm uses style={{…}}).
+   Inline styles beat normal CSS, so these rules use !important.
+   ========================================================================== */
+
+/* card */
+.glass-admin div[style*="background-color"]:not(.ga-side):not(.ga-top):not(.ga-stat) {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.04)) !important;
+  border: 1px solid var(--g-edge) !important;
+  border-radius: var(--g-radius) !important;
+  box-shadow: 0 22px 50px -28px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+  -webkit-backdrop-filter: var(--g-blur);
+  backdrop-filter: var(--g-blur);
+  padding: 1.5rem !important;
+  color: var(--g-ink);
+  font-family: "Manrope", system-ui, sans-serif !important;
+}
+
+/* title */
+.glass-admin :is(h1, h2, h3)[style] {
+  color: var(--g-ink) !important;
+  font-family: "Sora", "Manrope", sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.015em !important;
+}
+
+/* labels + required star + errors */
+.glass-admin label[style] {
+  color: var(--g-muted) !important;
+}
+.glass-admin :is(span, p)[style*="color"] {
+  color: #fda4af !important;
+}
+.glass-admin p[style*="color: rgb(21, 128, 61)"] {
+  color: #86efac !important;
+}
+
+/* inputs keep their rose border when invalid */
+.glass-admin input[aria-invalid="true"] {
+  border-color: rgba(251, 113, 133, 0.9) !important;
+}
+
+/* buttons */
+.glass-admin button[style]:not(.ga-btn):not(.ga-stat):not(.ga-nav-item):not(.ga-brand):not(.ga-scrim) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--g-muted) !important;
+  border: 1px solid var(--g-edge) !important;
+  border-radius: 14px !important;
+  font-weight: 600 !important;
+}
+.glass-admin button[type="submit"][style] {
+  background: linear-gradient(135deg, #fde68a, #fbbf24 45%, #fb923c) !important;
+  color: #1c1303 !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 12px 28px -12px rgba(251, 146, 60, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+.glass-admin button[type="submit"][style]:disabled {
+  filter: saturate(0.5);
+  opacity: 0.55;
+}
+
+/* image preview */
+.glass-admin img[style*="border"] {
+  border: 1px solid var(--g-edge) !important;
+}
